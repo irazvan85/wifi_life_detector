@@ -23,10 +23,12 @@ export class VitalSignsProcessor {
   // Simple IIR filter states for breathing band
   private breathLowState = 0;
   private breathHighState = 0;
+  private breathPrevInput = 0;
 
   // Simple IIR filter states for heartbeat band
   private heartLowState = 0;
   private heartHighState = 0;
+  private heartPrevInput = 0;
 
   /** Process a new CSI mean amplitude sample */
   addSample(amplitude: number, timestamp: number): void {
@@ -79,13 +81,16 @@ export class VitalSignsProcessor {
     this.timestampBuffer = [];
     this.breathLowState = 0;
     this.breathHighState = 0;
+    this.breathPrevInput = 0;
     this.heartLowState = 0;
     this.heartHighState = 0;
+    this.heartPrevInput = 0;
   }
 
   /**
    * Simple first-order IIR bandpass filter.
-   * Uses low-pass and high-pass combination.
+   * Cascades a low-pass filter (removes frequencies above highCutoff)
+   * with a high-pass filter (removes frequencies below lowCutoff).
    * In production, a proper FIR or higher-order IIR filter would be used.
    */
   private bandpassFilter(
@@ -94,22 +99,32 @@ export class VitalSignsProcessor {
     highCutoff: number,
     band: 'breath' | 'heart',
   ): number {
-    // Low-pass filter (keeps frequencies below highCutoff)
+    // Low-pass: y[n] = alpha * x[n] + (1 - alpha) * y[n-1]
     const alphaLow = highCutoff / (highCutoff + 1 / (2 * Math.PI));
-    // High-pass filter (removes frequencies below lowCutoff)
+    // High-pass: y[n] = alpha * (y[n-1] + x[n] - x[n-1])
     const alphaHigh = 1 / (1 + 2 * Math.PI * lowCutoff);
 
     if (band === 'breath') {
+      // Apply low-pass first
       this.breathLowState =
         this.breathLowState + alphaLow * (input - this.breathLowState);
-      const highPassed = alphaHigh * (this.breathHighState + input - this.breathLowState);
+      // Then high-pass on the low-passed signal
+      const lowPassed = this.breathLowState;
+      const highPassed =
+        alphaHigh * (this.breathHighState + lowPassed - this.breathPrevInput);
       this.breathHighState = highPassed;
+      this.breathPrevInput = lowPassed;
       return highPassed;
     } else {
+      // Apply low-pass first
       this.heartLowState =
         this.heartLowState + alphaLow * (input - this.heartLowState);
-      const highPassed = alphaHigh * (this.heartHighState + input - this.heartLowState);
+      // Then high-pass on the low-passed signal
+      const lowPassed = this.heartLowState;
+      const highPassed =
+        alphaHigh * (this.heartHighState + lowPassed - this.heartPrevInput);
       this.heartHighState = highPassed;
+      this.heartPrevInput = lowPassed;
       return highPassed;
     }
   }
