@@ -47,13 +47,13 @@ export function VitalCard({
 
   return (
     <div
-      className={`rounded-xl border p-4 ${colors.border} ${colors.bg} ${colors.glow} transition-all`}
+      className={`rounded-xl border p-3 sm:p-4 ${colors.border} ${colors.bg} ${colors.glow} transition-all`}
     >
-      <div className="flex items-center gap-2 mb-2">
+      <div className="flex items-center gap-2 mb-1.5 sm:mb-2">
         <Icon
-          className={`w-4 h-4 ${colors.icon} ${animate ? 'animate-pulse' : ''}`}
+          className={`w-4 h-4 sm:w-4 sm:h-4 ${colors.icon} ${animate ? 'animate-pulse' : ''}`}
         />
-        <span className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest">
+        <span className="font-mono text-[11px] sm:text-[10px] text-zinc-500 uppercase tracking-widest">
           {label}
         </span>
       </div>
@@ -62,11 +62,11 @@ export function VitalCard({
           key={value}
           initial={{ opacity: 0.7, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
-          className={`text-2xl font-mono font-light ${colors.value}`}
+          className={`text-xl sm:text-2xl font-mono font-light ${colors.value}`}
         >
           {value}
         </motion.span>
-        <span className="text-xs font-mono text-zinc-500">{unit}</span>
+        <span className="text-[11px] sm:text-xs font-mono text-zinc-500">{unit}</span>
       </div>
     </div>
   );
