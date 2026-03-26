@@ -1,0 +1,5 @@
+{
+  "name": "VitalScan",
+  "description": "A Wi-Fi based presence and life detector dashboard.",
+  "requestFramePermissions": []
+}
