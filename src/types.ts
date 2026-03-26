@@ -1,0 +1,56 @@
+/** Represents a single WiFi CSI (Channel State Information) sample */
+export interface CSISample {
+  timestamp: number;
+  /** Amplitude values across subcarriers */
+  amplitudes: number[];
+  /** Mean amplitude used for vital signs extraction */
+  meanAmplitude: number;
+}
+
+/** Extracted vital signs from CSI data processing */
+export interface VitalSigns {
+  heartRate: number; // beats per minute (60-100 normal)
+  respiratoryRate: number; // breaths per minute (12-20 normal)
+  movementIndex: number; // 0-100 scale
+  presenceDetected: boolean;
+  confidence: number; // 0-100 percentage
+}
+
+/** A detected human subject with position and vitals */
+export interface DetectedSubject {
+  id: string;
+  label: string;
+  distance: number; // meters from sensor
+  angle: number; // degrees (0-360)
+  vitals: VitalSigns;
+  lastUpdated: number;
+}
+
+/** Real-time waveform data for visualization */
+export interface WaveformData {
+  /** Raw CSI amplitude signal */
+  csiSignal: number[];
+  /** Extracted breathing waveform */
+  breathingSignal: number[];
+  /** Extracted heartbeat waveform */
+  heartbeatSignal: number[];
+  /** Timestamps for the samples */
+  timestamps: number[];
+}
+
+/** System monitoring status */
+export type MonitoringStatus = 'idle' | 'initializing' | 'monitoring' | 'error';
+
+/** Configuration for the CSI simulation engine */
+export interface CSIEngineConfig {
+  /** Number of subcarriers to simulate */
+  subcarrierCount: number;
+  /** Sampling rate in Hz */
+  sampleRate: number;
+  /** Target heart rate for simulation (bpm) */
+  targetHeartRate: number;
+  /** Target respiratory rate for simulation (breaths/min) */
+  targetRespiratoryRate: number;
+  /** Signal noise level (0-1) */
+  noiseLevel: number;
+}
