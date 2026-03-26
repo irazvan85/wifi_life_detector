@@ -4,7 +4,7 @@
   "description": "WiFi CSI-Based Vital Signs Monitoring - Contactless presence and life detection dashboard",
   "start_url": "/",
   "display": "standalone",
-  "orientation": "portrait",
+  "orientation": "any",
   "background_color": "#09090b",
   "theme_color": "#22c55e",
   "icons": [

@@ -53,7 +53,7 @@ export function VitalCard({
         <Icon
           className={`w-4 h-4 sm:w-4 sm:h-4 ${colors.icon} ${animate ? 'animate-pulse' : ''}`}
         />
-        <span className="font-mono text-[11px] sm:text-[10px] text-zinc-500 uppercase tracking-widest">
+        <span className="font-mono text-[10px] sm:text-[11px] text-zinc-500 uppercase tracking-widest">
           {label}
         </span>
       </div>
