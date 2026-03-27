@@ -11,11 +11,11 @@ export function RadarDisplay({ subjects, status }: RadarDisplayProps) {
   const isActive = status === 'monitoring';
 
   return (
-    <div className="bg-zinc-900/40 border border-zinc-800/50 rounded-2xl p-6 relative overflow-hidden flex flex-col items-center justify-center min-h-[400px]">
-      <div className="absolute top-4 left-4 font-mono text-xs text-zinc-500 uppercase tracking-widest">
+    <div className="bg-zinc-900/40 border border-zinc-800/50 rounded-2xl p-4 sm:p-6 relative overflow-hidden flex flex-col items-center justify-center min-h-[320px] sm:min-h-[400px]">
+      <div className="absolute top-3 sm:top-4 left-3 sm:left-4 font-mono text-[10px] sm:text-xs text-zinc-500 uppercase tracking-widest">
         CSI_Spatial_Map
       </div>
-      <div className="absolute top-4 right-4 flex items-center gap-2">
+      <div className="absolute top-3 sm:top-4 right-3 sm:right-4 flex items-center gap-2">
         <div
           className={`w-2 h-2 rounded-full ${isActive ? 'bg-green-400 animate-pulse' : 'bg-zinc-600'}`}
         />
@@ -28,8 +28,8 @@ export function RadarDisplay({ subjects, status }: RadarDisplayProps) {
         </span>
       </div>
 
-      {/* The Radar Circle */}
-      <div className="relative w-72 h-72 md:w-80 md:h-80 rounded-full border border-green-500/20 radar-bg flex items-center justify-center">
+      {/* The Radar Circle - responsive sizing */}
+      <div className="relative w-56 h-56 sm:w-72 sm:h-72 md:w-80 md:h-80 rounded-full border border-green-500/20 radar-bg flex items-center justify-center">
         {/* Concentric rings with distance labels */}
         <div className="absolute w-3/4 h-3/4 rounded-full border border-green-500/10" />
         <div className="absolute w-1/2 h-1/2 rounded-full border border-green-500/10" />
@@ -101,7 +101,7 @@ export function RadarDisplay({ subjects, status }: RadarDisplayProps) {
       </div>
 
       {/* Legend */}
-      <div className="mt-4 flex gap-4 font-mono text-[10px] text-zinc-500">
+      <div className="mt-3 sm:mt-4 flex gap-4 font-mono text-[11px] sm:text-[10px] text-zinc-500">
         <span className="flex items-center gap-1">
           <span className="w-2 h-2 rounded-full bg-green-500" /> Sensor
         </span>

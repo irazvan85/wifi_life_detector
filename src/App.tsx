@@ -40,20 +40,20 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-300 font-sans selection:bg-green-900/50 p-4 md:p-8 flex flex-col items-center">
+    <div className="min-h-screen bg-zinc-950 text-zinc-300 font-sans selection:bg-green-900/50 p-3 sm:p-4 md:p-8 flex flex-col items-center">
       {/* Header */}
-      <header className="w-full max-w-6xl flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-        <div>
-          <h1 className="text-2xl font-mono font-bold text-green-400 flex items-center gap-3 tracking-tighter">
-            <Activity className="w-6 h-6" />
-            VITAL_SCAN // WIFI_LIFE_DETECTOR
+      <header className="w-full max-w-6xl flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-8 gap-3 sm:gap-4">
+        <div className="min-w-0">
+          <h1 className="text-lg sm:text-2xl font-mono font-bold text-green-400 flex items-center gap-2 sm:gap-3 tracking-tighter">
+            <Activity className="w-5 h-5 sm:w-6 sm:h-6 shrink-0" />
+            <span className="truncate">VITAL_SCAN // WIFI_LIFE_DETECTOR</span>
           </h1>
-          <p className="text-zinc-500 font-mono text-xs mt-1 uppercase tracking-widest">
+          <p className="text-zinc-500 font-mono text-[10px] sm:text-xs mt-1 uppercase tracking-widest">
             WiFi CSI-Based Vital Signs Monitoring
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
           {/* Status indicator */}
           <div className="flex items-center gap-2 bg-zinc-900/50 px-3 py-2 rounded-lg border border-zinc-800/50">
             <Wifi
@@ -71,10 +71,10 @@ export default function App() {
           <button
             onClick={isActive || status === 'initializing' ? stopMonitoring : startMonitoring}
             disabled={status === 'initializing'}
-            className={`flex items-center gap-2 px-4 py-2 rounded font-mono text-sm font-bold uppercase tracking-wider transition-all disabled:opacity-50 ${
+            className={`flex items-center justify-center gap-2 px-4 py-2.5 sm:py-2 rounded font-mono text-sm font-bold uppercase tracking-wider transition-all disabled:opacity-50 flex-1 sm:flex-none min-h-[44px] ${
               isActive
-                ? 'bg-red-500/10 text-red-500 border border-red-500/50 hover:bg-red-500/20'
-                : 'bg-green-500/10 text-green-500 border border-green-500/50 hover:bg-green-500/20'
+                ? 'bg-red-500/10 text-red-500 border border-red-500/50 hover:bg-red-500/20 active:bg-red-500/30'
+                : 'bg-green-500/10 text-green-500 border border-green-500/50 hover:bg-green-500/20 active:bg-green-500/30'
             }`}
           >
             <Power className="w-4 h-4" />
@@ -89,9 +89,9 @@ export default function App() {
 
       {/* Info Banner */}
       {status === 'idle' && (
-        <div className="w-full max-w-6xl mb-6 bg-zinc-900/40 border border-zinc-800/50 rounded-lg p-4 flex items-start gap-3">
+        <div className="w-full max-w-6xl mb-4 sm:mb-6 bg-zinc-900/40 border border-zinc-800/50 rounded-lg p-3 sm:p-4 flex items-start gap-3">
           <Radio className="w-5 h-5 shrink-0 mt-0.5 text-green-500" />
-          <div className="text-sm text-zinc-400">
+          <div className="text-xs sm:text-sm text-zinc-400">
             <strong className="block text-green-400 font-medium mb-1 font-mono text-xs uppercase">
               WiFi CSI Vital Signs Detection
             </strong>
@@ -103,7 +103,7 @@ export default function App() {
             sensors.
             <br />
             <span className="text-zinc-500 text-xs mt-1 inline-block">
-              Press <strong className="text-green-400">Start Monitor</strong> to
+              Tap <strong className="text-green-400">Start Monitor</strong> to
               begin CSI analysis with simulated sensor data.
             </span>
           </div>
@@ -111,25 +111,25 @@ export default function App() {
       )}
 
       {/* Main Dashboard */}
-      <main className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <main className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
         {/* Left Column: Radar + Subject Details */}
-        <div className="lg:col-span-5 flex flex-col gap-6">
+        <div className="lg:col-span-5 flex flex-col gap-4 sm:gap-6">
           <RadarDisplay subjects={subjects} status={status} />
 
           {/* Subject List */}
           <div className="bg-zinc-900/40 border border-zinc-800/50 rounded-2xl overflow-hidden">
             <div className="p-3 border-b border-zinc-800/50 flex justify-between items-center bg-zinc-900/80">
-              <h2 className="font-mono text-[10px] text-zinc-400 uppercase tracking-widest flex items-center gap-2">
+              <h2 className="font-mono text-[11px] sm:text-[10px] text-zinc-400 uppercase tracking-widest flex items-center gap-2">
                 <Users className="w-3.5 h-3.5" />
                 Detected Subjects
               </h2>
-              <span className="font-mono text-[10px] bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded">
+              <span className="font-mono text-[11px] sm:text-[10px] bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded">
                 {subjects.length}
               </span>
             </div>
             <div className="p-2 max-h-[200px] overflow-y-auto">
               {subjects.length === 0 ? (
-                <div className="text-center text-zinc-600 font-mono text-[10px] uppercase py-6 tracking-widest">
+                <div className="text-center text-zinc-600 font-mono text-[11px] sm:text-[10px] uppercase py-6 tracking-widest">
                   {isActive ? 'Scanning...' : 'No subjects'}
                 </div>
               ) : (
@@ -146,11 +146,11 @@ export default function App() {
                         <span className="font-mono text-xs text-cyan-300 font-bold">
                           {subject.label}
                         </span>
-                        <span className="font-mono text-[10px] text-zinc-500">
+                        <span className="font-mono text-[11px] sm:text-[10px] text-zinc-500">
                           {subject.distance}m away
                         </span>
                       </div>
-                      <div className="grid grid-cols-3 gap-2 font-mono text-[10px]">
+                      <div className="grid grid-cols-3 gap-2 font-mono text-[11px] sm:text-[10px]">
                         <div>
                           <span className="text-zinc-500">HR</span>
                           <span className="ml-1 text-green-300">
@@ -179,7 +179,7 @@ export default function App() {
         </div>
 
         {/* Right Column: Vitals + Waveforms */}
-        <div className="lg:col-span-7 flex flex-col gap-6">
+        <div className="lg:col-span-7 flex flex-col gap-4 sm:gap-6">
           {/* Vital Signs Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <VitalCard
@@ -230,9 +230,9 @@ export default function App() {
           </div>
 
           {/* Presence Detection Bar */}
-          <div className="bg-zinc-900/40 border border-zinc-800/50 rounded-xl p-4">
+          <div className="bg-zinc-900/40 border border-zinc-800/50 rounded-xl p-3 sm:p-4">
             <div className="flex justify-between items-center mb-3">
-              <span className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest">
+              <span className="font-mono text-[11px] sm:text-[10px] text-zinc-500 uppercase tracking-widest">
                 Life Presence Indicator
               </span>
               <span
@@ -263,29 +263,29 @@ export default function App() {
           </div>
 
           {/* Waveform Charts */}
-          <div className="bg-zinc-900/40 border border-zinc-800/50 rounded-2xl p-4">
-            <h2 className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+          <div className="bg-zinc-900/40 border border-zinc-800/50 rounded-2xl p-3 sm:p-4">
+            <h2 className="font-mono text-[11px] sm:text-[10px] text-zinc-500 uppercase tracking-widest mb-3 sm:mb-4 flex items-center gap-2">
               <Activity className="w-3.5 h-3.5" />
               Real-Time Signal Analysis
             </h2>
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2 sm:gap-3">
               <WaveformChart
                 data={waveform.csiSignal}
                 label="CSI Amplitude (Raw)"
                 color="rgba(34, 197, 94, 0.9)"
-                height={70}
+                height={60}
               />
               <WaveformChart
                 data={waveform.breathingSignal}
-                label="Breathing Waveform (0.1–0.5 Hz)"
+                label="Breathing (0.1–0.5 Hz)"
                 color="rgba(96, 165, 250, 0.9)"
-                height={70}
+                height={60}
               />
               <WaveformChart
                 data={waveform.heartbeatSignal}
-                label="Heartbeat Waveform (0.8–2.0 Hz)"
+                label="Heartbeat (0.8–2.0 Hz)"
                 color="rgba(248, 113, 113, 0.9)"
-                height={70}
+                height={60}
               />
             </div>
           </div>
@@ -295,7 +295,7 @@ export default function App() {
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-zinc-900/40 border border-zinc-800/50 rounded-xl p-4 font-mono text-[10px] text-zinc-500 grid grid-cols-2 md:grid-cols-4 gap-3"
+              className="bg-zinc-900/40 border border-zinc-800/50 rounded-xl p-3 sm:p-4 font-mono text-[11px] sm:text-[10px] text-zinc-500 grid grid-cols-2 md:grid-cols-4 gap-3"
             >
               <div>
                 <span className="block text-zinc-600 uppercase">
@@ -329,7 +329,7 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="w-full max-w-6xl mt-8 pt-4 border-t border-zinc-800/30 flex justify-between items-center font-mono text-[10px] text-zinc-600 uppercase">
+      <footer className="w-full max-w-6xl mt-6 sm:mt-8 pt-4 border-t border-zinc-800/30 flex flex-col sm:flex-row justify-between items-center gap-1 font-mono text-[10px] text-zinc-600 uppercase pb-2">
         <span>VitalScan WiFi Life Detector v1.0</span>
         <span>WiFi CSI-Based Contactless Monitoring</span>
       </footer>

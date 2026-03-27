@@ -92,13 +92,13 @@ export function WaveformChart({
   }, [data, color, height]);
 
   return (
-    <div className="bg-zinc-950/50 border border-zinc-800/30 rounded-lg p-3">
-      <div className="flex justify-between items-center mb-2">
-        <span className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest">
+    <div className="bg-zinc-950/50 border border-zinc-800/30 rounded-lg p-2 sm:p-3">
+      <div className="flex justify-between items-center mb-1.5 sm:mb-2">
+        <span className="font-mono text-[10px] sm:text-[10px] text-zinc-500 uppercase tracking-widest truncate mr-2">
           {label}
         </span>
         {data.length > 0 && (
-          <span className="font-mono text-[10px]" style={{ color }}>
+          <span className="font-mono text-[10px] shrink-0" style={{ color }}>
             {data[data.length - 1]?.toFixed(4)}
           </span>
         )}
