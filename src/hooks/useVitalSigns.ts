@@ -5,12 +5,18 @@ import {
   DetectedSubject,
   WaveformData,
   MonitoringStatus,
+  WiFiBoardInfo,
+  RawCSIParams,
 } from '../types';
 
 interface UseVitalSignsReturn {
   status: MonitoringStatus;
   subjects: DetectedSubject[];
   waveform: WaveformData;
+  boardInfo: WiFiBoardInfo | null;
+  rawCSIParams: RawCSIParams | null;
+  /** Always true – this app uses simulated (dummy) data, not a real WiFi board */
+  isSimulated: boolean;
   startMonitoring: () => void;
   stopMonitoring: () => void;
 }
@@ -29,6 +35,8 @@ export function useVitalSigns(): UseVitalSignsReturn {
     heartbeatSignal: [],
     timestamps: [],
   });
+  const [boardInfo, setBoardInfo] = useState<WiFiBoardInfo | null>(null);
+  const [rawCSIParams, setRawCSIParams] = useState<RawCSIParams | null>(null);
 
   const engineRef = useRef<CSIEngine | null>(null);
   const processorRef = useRef<VitalSignsProcessor | null>(null);
@@ -70,6 +78,8 @@ export function useVitalSigns(): UseVitalSignsReturn {
         engine.updateSubjects();
         setSubjects(engine.getDetectedSubjects());
         setWaveform(processor.getWaveformData());
+        setBoardInfo(engine.getWifiBoardInfo());
+        setRawCSIParams(engine.getLastRawCSIParams());
       }, 250);
     }, 1500);
   }, []);
@@ -87,6 +97,8 @@ export function useVitalSigns(): UseVitalSignsReturn {
       heartbeatSignal: [],
       timestamps: [],
     });
+    setBoardInfo(null);
+    setRawCSIParams(null);
   }, [cleanup]);
 
   // Cleanup on unmount
@@ -94,5 +106,5 @@ export function useVitalSigns(): UseVitalSignsReturn {
     return cleanup;
   }, [cleanup]);
 
-  return { status, subjects, waveform, startMonitoring, stopMonitoring };
+  return { status, subjects, waveform, boardInfo, rawCSIParams, isSimulated: true, startMonitoring, stopMonitoring };
 }

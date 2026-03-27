@@ -54,3 +54,30 @@ export interface CSIEngineConfig {
   /** Signal noise level (0-1) */
   noiseLevel: number;
 }
+
+/** Simulated WiFi board hardware details */
+export interface WiFiBoardInfo {
+  boardModel: string;
+  wifiStandard: string;
+  frequencyBand: string;
+  channel: number;
+  bandwidth: string;
+  macAddress: string;
+  firmwareVersion: string;
+  subcarrierCount: number;
+  sampleRate: number;
+  /** Received Signal Strength Indicator in dBm */
+  rssi: number;
+}
+
+/** Raw parameters extracted from the latest CSI sample */
+export interface RawCSIParams {
+  timestamp: number;
+  meanAmplitude: number;
+  minAmplitude: number;
+  maxAmplitude: number;
+  amplitudeVariance: number;
+  subcarrierCount: number;
+  /** First 8 subcarrier amplitudes as a quick preview */
+  subcarrierPreview: number[];
+}
