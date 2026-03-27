@@ -81,3 +81,26 @@ export interface RawCSIParams {
   /** First 8 subcarrier amplitudes as a quick preview */
   subcarrierPreview: number[];
 }
+
+/** How the app connects to a CSI data source */
+export type ConnectionMethod = 'simulation' | 'websocket' | 'serial';
+
+/** Connection state for hardware adapters */
+export type ConnectionState = 'disconnected' | 'connecting' | 'connected' | 'error';
+
+/** Configuration for connecting to a hardware board */
+export interface HardwareConnectionConfig {
+  method: ConnectionMethod;
+  /** WebSocket URL (e.g. ws://192.168.4.1:81) */
+  websocketUrl: string;
+  /** Serial baud rate */
+  serialBaudRate: number;
+}
+
+/** Events emitted by a hardware adapter */
+export interface HardwareAdapterEvents {
+  onSample: (sample: CSISample) => void;
+  onBoardInfo: (info: WiFiBoardInfo) => void;
+  onError: (error: string) => void;
+  onStateChange: (state: ConnectionState) => void;
+}
