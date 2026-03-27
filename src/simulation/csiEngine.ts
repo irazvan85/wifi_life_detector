@@ -1,4 +1,4 @@
-import { CSISample, CSIEngineConfig, DetectedSubject, VitalSigns } from '../types';
+import { CSISample, CSIEngineConfig, DetectedSubject, VitalSigns, WiFiBoardInfo, RawCSIParams } from '../types';
 
 const DEFAULT_CONFIG: CSIEngineConfig = {
   subcarrierCount: 30,
@@ -24,6 +24,22 @@ export class CSIEngine {
   private config: CSIEngineConfig;
   private startTime: number;
   private subjects: Map<string, SubjectSimState>;
+  private lastSample: CSISample | null = null;
+  private rssi: number = -45;
+
+  /** Static board info (fixed per session, simulated hardware) */
+  private readonly boardInfo: WiFiBoardInfo = {
+    boardModel: 'ESP32-WROOM-32',
+    wifiStandard: '802.11n',
+    frequencyBand: '2.4 GHz',
+    channel: 6,
+    bandwidth: '20 MHz',
+    macAddress: 'A4:CF:12:3B:7E:01',
+    firmwareVersion: 'v5.1.2-csi',
+    subcarrierCount: DEFAULT_CONFIG.subcarrierCount,
+    sampleRate: DEFAULT_CONFIG.sampleRate,
+    rssi: -45,
+  };
 
   constructor(config: Partial<CSIEngineConfig> = {}) {
     this.config = { ...DEFAULT_CONFIG, ...config };
@@ -103,7 +119,15 @@ export class CSIEngine {
     const meanAmplitude =
       amplitudes.reduce((a, b) => a + b, 0) / amplitudes.length;
 
-    return { timestamp: now, amplitudes, meanAmplitude };
+    const sample: CSISample = { timestamp: now, amplitudes, meanAmplitude };
+    this.lastSample = sample;
+
+    // Slowly drift RSSI for realism
+    this.rssi += (Math.random() - 0.5) * 0.4;
+    this.rssi = Math.max(-75, Math.min(-30, this.rssi));
+    this.boardInfo.rssi = Math.round(this.rssi);
+
+    return sample;
   }
 
   /** Update subject simulation state (called periodically) */
@@ -184,6 +208,31 @@ export class CSIEngine {
         lastUpdated: Date.now(),
       };
     });
+  }
+
+  /** Get simulated WiFi board hardware information */
+  getWifiBoardInfo(): WiFiBoardInfo {
+    return { ...this.boardInfo };
+  }
+
+  /** Get raw CSI parameters from the most recent sample */
+  getLastRawCSIParams(): RawCSIParams | null {
+    if (!this.lastSample) return null;
+    const { timestamp, amplitudes, meanAmplitude } = this.lastSample;
+    const min = Math.min(...amplitudes);
+    const max = Math.max(...amplitudes);
+    const variance =
+      amplitudes.reduce((sum, v) => sum + (v - meanAmplitude) ** 2, 0) /
+      amplitudes.length;
+    return {
+      timestamp,
+      meanAmplitude: Math.round(meanAmplitude * 1000) / 1000,
+      minAmplitude: Math.round(min * 1000) / 1000,
+      maxAmplitude: Math.round(max * 1000) / 1000,
+      amplitudeVariance: Math.round(variance * 1000) / 1000,
+      subcarrierCount: amplitudes.length,
+      subcarrierPreview: amplitudes.slice(0, 8).map((v) => Math.round(v * 1000) / 1000),
+    };
   }
 
   /** Reset the engine with new subjects */
