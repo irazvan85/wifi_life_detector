@@ -1,6 +1,7 @@
 import { VitalSigns, WaveformData } from '../types';
 
 const SAMPLE_RATE = 20; // Hz — must match VitalSignsProcessor
+const MIN_WINDOW_SECONDS = 2; // Minimum data duration for rate estimation
 
 /**
  * Estimates heart rate, respiratory rate, and presence from the
@@ -44,7 +45,7 @@ export function estimateVitalSigns(waveform: WaveformData): VitalSigns {
  * filtered signal and converting to bpm / breaths-per-minute.
  */
 function estimateRate(signal: number[], minRate: number, maxRate: number): number {
-  if (signal.length < SAMPLE_RATE * 2) return 0; // need ≥ 2 s of data
+  if (signal.length < SAMPLE_RATE * MIN_WINDOW_SECONDS) return 0;
 
   // Use the most recent 10 seconds (or what's available)
   const window = signal.slice(-SAMPLE_RATE * 10);
