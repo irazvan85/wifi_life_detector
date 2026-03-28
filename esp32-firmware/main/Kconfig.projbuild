@@ -1,0 +1,68 @@
+menu "VitalScan CSI Configuration"
+
+    config VITALSCAN_WIFI_MODE_SOFTAP
+        bool "Use SoftAP mode (ESP32 creates its own network)"
+        default y
+        help
+            When enabled, ESP32 creates a WiFi access point named VitalScan-ESP32.
+            When disabled, ESP32 connects to an existing WiFi network (Station mode).
+
+    config VITALSCAN_SOFTAP_SSID
+        string "SoftAP SSID"
+        default "VitalScan-ESP32"
+        depends on VITALSCAN_WIFI_MODE_SOFTAP
+        help
+            SSID for the ESP32 SoftAP network.
+
+    config VITALSCAN_SOFTAP_PASS
+        string "SoftAP Password"
+        default "vitalscan"
+        depends on VITALSCAN_WIFI_MODE_SOFTAP
+        help
+            Password for the SoftAP network. Set empty for open network.
+
+    config VITALSCAN_SOFTAP_CHANNEL
+        int "SoftAP WiFi Channel"
+        default 6
+        range 1 13
+        depends on VITALSCAN_WIFI_MODE_SOFTAP
+        help
+            WiFi channel for SoftAP mode.
+
+    config VITALSCAN_STA_SSID
+        string "Station Mode WiFi SSID"
+        default "YourWiFiNetwork"
+        depends on !VITALSCAN_WIFI_MODE_SOFTAP
+        help
+            SSID of the WiFi network to connect to in Station mode.
+
+    config VITALSCAN_STA_PASS
+        string "Station Mode WiFi Password"
+        default "YourWiFiPassword"
+        depends on !VITALSCAN_WIFI_MODE_SOFTAP
+        help
+            Password for the WiFi network in Station mode.
+
+    config VITALSCAN_WS_PORT
+        int "WebSocket Server Port"
+        default 81
+        range 1 65535
+        help
+            Port for the WebSocket server that streams CSI data.
+
+    config VITALSCAN_CSI_SEND_RATE_MS
+        int "CSI Send Rate (ms)"
+        default 50
+        range 20 1000
+        help
+            How often to send CSI data (milliseconds).
+            50ms = 20 Hz (matches the web app default sample rate).
+
+    config VITALSCAN_SERIAL_OUTPUT
+        bool "Enable Serial Output"
+        default y
+        help
+            Output CSI data over USB serial (115200 baud) in addition to WebSocket.
+            Useful for Web Serial adapter connection.
+
+endmenu

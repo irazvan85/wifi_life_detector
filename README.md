@@ -17,6 +17,7 @@ View the live app: https://ai.studio/apps/848a2f46-8c77-4552-b0c7-2605771a40ab
 - [Overview](#overview)
 - [Tech Stack](#tech-stack)
 - [Architecture](#architecture)
+- [ESP32 Hardware Integration](#esp32-hardware-integration)
 - [Signal Processing](#signal-processing)
 - [Data Flow](#data-flow)
 - [Component Structure](#component-structure)
@@ -69,30 +70,45 @@ The current version uses a **software simulation** of CSI data (no physical hard
 
 ```
 wifi_life_detector/
+├── esp32-firmware/                        # ESP32 CSI firmware (ESP-IDF)
+│   ├── CMakeLists.txt                     # ESP-IDF project file
+│   ├── sdkconfig.defaults                 # Default build config (CSI enabled)
+│   ├── README.md                          # Firmware build & flash guide
+│   └── main/
+│       ├── main.c                         # Entry point — WiFi, CSI, WebSocket init
+│       ├── csi_handler.c/h                # CSI callback — I/Q → amplitude extraction
+│       └── ws_server.c/h                  # WebSocket server (port 81) + serial output
 ├── src/
-│   ├── main.tsx                        # React entry point; registers PWA service worker
-│   ├── App.tsx                         # Root UI component — layout, header, state wiring
-│   ├── types.ts                        # Shared TypeScript interfaces
-│   ├── index.css                       # Global styles (Tailwind + custom utilities)
+│   ├── main.tsx                           # React entry point; registers PWA service worker
+│   ├── App.tsx                            # Root UI component — layout, header, state wiring
+│   ├── types.ts                           # Shared TypeScript interfaces
+│   ├── index.css                          # Global styles (Tailwind + custom utilities)
 │   ├── simulation/
-│   │   └── csiEngine.ts               # CSI simulation engine (class CSIEngine)
+│   │   └── csiEngine.ts                   # CSI simulation engine (class CSIEngine)
 │   ├── processing/
-│   │   └── vitalSignsProcessor.ts     # IIR bandpass filter & waveform buffers (class VitalSignsProcessor)
+│   │   └── vitalSignsProcessor.ts         # IIR bandpass filter & waveform buffers
+│   ├── hardware/
+│   │   ├── HardwareAdapter.ts             # Abstract base class for hardware adapters
+│   │   ├── csiProtocol.ts                 # CSI protocol parser (JSON + CSV)
+│   │   ├── WebSocketAdapter.ts            # ESP32 WebSocket connection
+│   │   └── WebSerialAdapter.ts            # ESP32 USB serial connection
 │   ├── hooks/
-│   │   └── useVitalSigns.ts           # React hook — orchestrates engine, processor, intervals
+│   │   └── useVitalSigns.ts               # React hook — orchestrates engine, processor, intervals
 │   └── components/
-│       ├── RadarDisplay.tsx           # Animated polar radar with subject blips
-│       ├── VitalCard.tsx              # Metric card (HR, RR, Movement, Confidence)
-│       └── WaveformChart.tsx          # Canvas-based real-time signal chart
+│       ├── ConnectionPanel.tsx             # Hardware connection UI
+│       ├── RadarDisplay.tsx               # Animated polar radar with subject blips
+│       ├── VitalCard.tsx                  # Metric card (HR, RR, Movement, Confidence)
+│       └── WaveformChart.tsx              # Canvas-based real-time signal chart
 ├── public/
-│   ├── manifest.json                  # PWA Web App Manifest
-│   ├── sw.js                          # Service worker (network-first + cache-first)
+│   ├── manifest.json                      # PWA Web App Manifest
+│   ├── sw.js                              # Service worker (network-first + cache-first)
 │   └── icons/
 │       ├── icon-192.svg
 │       └── icon-512.svg
-├── index.html                         # HTML shell (PWA meta tags, fonts)
-├── vite.config.ts                     # Vite config (React plugin, Tailwind, env injection)
-├── tsconfig.json                      # TypeScript config (ES2022, bundler resolution)
+├── ESP32_SETUP.md                         # Step-by-step ESP32 deployment guide
+├── index.html                             # HTML shell (PWA meta tags, fonts)
+├── vite.config.ts                         # Vite config (React plugin, Tailwind, env injection)
+├── tsconfig.json                          # TypeScript config (ES2022, bundler resolution)
 └── package.json
 ```
 
@@ -107,6 +123,41 @@ wifi_life_detector/
 | `RadarDisplay` | Draws concentric distance rings, an animated rotating sweep, and animated blips for each detected subject at their polar coordinates. |
 | `VitalCard` | Reusable card with colour-coded status (green/yellow/red) for a single vital-sign metric. |
 | `WaveformChart` | Canvas element that plots the last N samples of a signal buffer. Re-renders on every waveform state update. |
+
+---
+
+## ESP32 Hardware Integration
+
+The `esp32-firmware/` directory contains a complete ESP-IDF firmware for collecting real WiFi CSI data on an ESP32 microcontroller. This replaces the simulation engine with real-world signal capture.
+
+### Quick Start
+
+```bash
+cd esp32-firmware
+idf.py set-target esp32
+idf.py build
+idf.py -p /dev/ttyUSB0 flash monitor
+```
+
+### How It Works
+
+1. **ESP32 creates a WiFi access point** (`VitalScan-ESP32`) or joins an existing network
+2. **CSI callback** captures raw I/Q data from every received WiFi frame
+3. **Amplitude extraction** computes √(I² + Q²) for each OFDM subcarrier
+4. **WebSocket server** (port 81) streams JSON to the web app: `{"type":"csi","ts":...,"amps":[...]}`
+5. **USB serial** outputs the same JSON at 115200 baud for Web Serial connections
+
+### Connection Methods
+
+| Method | Adapter | Use Case |
+|--------|---------|----------|
+| **WebSocket** | `WebSocketAdapter` → `ws://192.168.4.1:81` | Phone/tablet over WiFi |
+| **Web Serial** | `WebSerialAdapter` → USB at 115200 baud | Desktop Chrome/Edge via USB |
+| **Simulation** | `CSIEngine` (no hardware) | Demo and development |
+
+> **📖 Full setup guide:** [ESP32_SETUP.md](ESP32_SETUP.md) — step-by-step from install to monitoring
+>
+> **📖 Firmware details:** [esp32-firmware/README.md](esp32-firmware/README.md) — build config, project structure, protocol
 
 ---
 
@@ -366,7 +417,6 @@ define: {
 
 ## Future Enhancements
 
-- **Real hardware integration** — Linux CSI Tools, Nexmon, or ESP32 with CSI firmware to feed live data into `VitalSignsProcessor`
 - **FFT-based frequency estimation** — Replace IIR peak-detection with Welch power-spectral-density for more accurate rate extraction
 - **Higher-order filters** — Butterworth or Chebyshev IIR / linear-phase FIR filters to improve stopband rejection
 - **Multi-room deployment** — Express backend aggregating data from multiple sensor nodes
@@ -375,3 +425,4 @@ define: {
 - **Test suite** — Vitest unit tests for `CSIEngine` and `VitalSignsProcessor`; Playwright e2e tests for the UI
 - **Dark / light theme toggle**
 - **Calibration wizard** — Guided baseline capture to improve SNR before monitoring begins
+- **Multi-person CSI separation** — Advanced algorithms to separate CSI contributions from multiple subjects
