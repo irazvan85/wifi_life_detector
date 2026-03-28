@@ -15,6 +15,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <inttypes.h>
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -180,7 +181,7 @@ static void csi_stream_task(void *arg)
     const uint32_t rate_ms = 50;
 #endif
 
-    ESP_LOGI(TAG, "CSI streaming task started (rate=%lu ms)", (unsigned long)rate_ms);
+    ESP_LOGI(TAG, "CSI streaming task started (rate=%" PRIu32 " ms)", rate_ms);
 
     for (;;) {
         if (csi_handler_get_sample(&sample, rate_ms)) {

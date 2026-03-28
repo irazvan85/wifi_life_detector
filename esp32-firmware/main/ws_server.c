@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <inttypes.h>
 
 #include "esp_log.h"
 #include "esp_wifi.h"
@@ -62,8 +63,8 @@ static void remove_client(int fd)
  */
 static int format_csi_json(char *buf, size_t buf_len, const csi_sample_t *s)
 {
-    int off = snprintf(buf, buf_len, "{\"type\":\"csi\",\"ts\":%lu,\"amps\":[",
-                       (unsigned long)s->timestamp_ms);
+    int off = snprintf(buf, buf_len, "{\"type\":\"csi\",\"ts\":%" PRIu32 ",\"amps\":[",
+                       s->timestamp_ms);
     if (off < 0 || (size_t)off >= buf_len) return -1;
 
     for (int i = 0; i < s->subcarrier_count; i++) {
