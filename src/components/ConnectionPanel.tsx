@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Wifi, Usb, MonitorSmartphone, ChevronDown, ChevronUp, Loader2, Check, X } from 'lucide-react';
 import { ConnectionMethod, ConnectionState } from '../types';
 import { WebSerialAdapter } from '../hardware/WebSerialAdapter';
+import { SerialDiagnostic } from './SerialDiagnostic';
 
 interface ConnectionPanelProps {
   method: ConnectionMethod;
@@ -114,7 +115,11 @@ export function ConnectionPanel({
                     color="purple"
                     onClick={() => onMethodChange('serial')}
                     disabled={isConnected || isConnecting || !serialSupported}
-                    tooltip={!serialSupported ? 'Web Serial is only available in Chrome/Edge on desktop' : undefined}
+                    tooltip={
+                      !serialSupported
+                        ? 'Web Serial API unavailable — page must be served over HTTPS (or localhost) and the browser must be Chrome/Edge on desktop'
+                        : undefined
+                    }
                   />
                 </div>
               </div>
@@ -160,6 +165,26 @@ export function ConnectionPanel({
                   <p className="font-mono text-[10px] text-zinc-600 mt-1">
                     Connect your ESP32 board via USB. A browser prompt will ask you to choose the serial port.
                   </p>
+
+                  {/* HTTPS / browser warning */}
+                  {!serialSupported && (
+                    <div className="mt-2 bg-amber-950/40 border border-amber-600/40 rounded px-3 py-2 font-mono text-[11px] text-amber-300 space-y-1">
+                      <p><strong>Web Serial API is not available.</strong> Two conditions must both be met:</p>
+                      <ul className="list-disc list-inside space-y-0.5 text-amber-400/80">
+                        <li>Page served over <strong>HTTPS</strong> or <code>localhost</code> (secure context)</li>
+                        <li>Browser is <strong>Chrome</strong> or <strong>Edge</strong> on desktop (not Firefox/Safari)</li>
+                      </ul>
+                      <p className="text-amber-500/70">
+                        Restart the dev server (it now has HTTPS enabled) and open{' '}
+                        <strong className="text-amber-300">https://localhost:3000</strong> — accept the self-signed cert warning.
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Serial diagnostic / test panel */}
+                  {serialSupported && !isConnected && !isConnecting && (
+                    <SerialDiagnostic baudRate={serialBaudRate} />
+                  )}
                 </div>
               )}
 
