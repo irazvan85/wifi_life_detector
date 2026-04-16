@@ -130,7 +130,7 @@ export function ConnectionPanel({
                     value={websocketUrl}
                     onChange={(e) => onWebSocketUrlChange(e.target.value)}
                     disabled={isConnected || isConnecting}
-                    placeholder="ws://192.168.4.1:81"
+                    placeholder="ws://192.168.1.99:81"
                     className="w-full bg-zinc-800/60 border border-zinc-700/50 rounded px-3 py-2 font-mono text-xs text-zinc-300 placeholder:text-zinc-600 focus:border-cyan-500/50 focus:outline-none disabled:opacity-50"
                   />
                   <p className="font-mono text-[10px] text-zinc-600 mt-1">

@@ -91,7 +91,7 @@ export type ConnectionState = 'disconnected' | 'connecting' | 'connected' | 'err
 /** Configuration for connecting to a hardware board */
 export interface HardwareConnectionConfig {
   method: ConnectionMethod;
-  /** WebSocket URL (e.g. ws://192.168.4.1:81) */
+  /** WebSocket URL (e.g. ws://192.168.1.99:81) */
   websocketUrl: string;
   /** Serial baud rate */
   serialBaudRate: number;

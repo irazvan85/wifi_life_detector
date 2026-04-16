@@ -63,7 +63,7 @@ export function useVitalSigns(): UseVitalSignsReturn {
   const [connectionMethod, setConnectionMethod] = useState<ConnectionMethod>('simulation');
   const [connectionState, setConnectionState] = useState<ConnectionState>('disconnected');
   const [connectionError, setConnectionError] = useState<string | null>(null);
-  const [websocketUrl, setWebsocketUrl] = useState('ws://192.168.4.1:81');
+  const [websocketUrl, setWebsocketUrl] = useState('ws://192.168.1.99:81');
   const [serialBaudRate, setSerialBaudRate] = useState(115200);
 
   const engineRef = useRef<CSIEngine | null>(null);
